@@ -115,3 +115,7 @@ dmypy.json
 
 # Mac files
 .DS_Store
+
+# Ensure __pycache__ and instance are not pushed
+__pycache__/
+instance/
