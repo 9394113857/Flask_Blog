@@ -29,12 +29,9 @@ MANIFEST
 
 # Flask specific
 instance/
-.env
 flask-project-env/
 
 # PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
 
@@ -115,7 +112,3 @@ dmypy.json
 
 # Mac files
 .DS_Store
-
-# Ensure __pycache__ and instance are not pushed
-__pycache__/
-instance/
