@@ -111,6 +111,8 @@ def register():
             user = User(username=form.username.data, email=form.email.data, password=hashed_password)
             db.session.add(user)
             db.session.commit()
+            # Save the new password to the password history
+            user.update_password_history(form.password.data)
             send_verification_email(user)
             flash('An email has been sent with instructions to verify your email.', 'info')
             return redirect(url_for('login'))
@@ -119,6 +121,7 @@ def register():
             flash('An error occurred. Please try again later.', 'danger')
             db.session.rollback()
     return render_template('register.html', title='Register', form=form)
+
 
 # Email verification route
 @app.route("/verify_email/<token>", methods=['GET'])
