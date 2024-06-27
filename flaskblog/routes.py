@@ -320,7 +320,6 @@ If you did not make this request then simply ignore this email and no changes wi
 '''
     mail.send(msg)
 
-# Reset password route
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
     if current_user.is_authenticated:
@@ -334,8 +333,12 @@ def reset_token(token):
             return redirect(url_for('reset_request'))
         form = ResetPasswordForm()
         if form.validate_on_submit():
+            if user.check_password_history(form.password.data):
+                flash('Cannot reuse an old password. Please choose a different password.', 'warning')
+                return redirect(url_for('reset_token', token=token))
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
             user.password = hashed_password
+            user.update_password_history(form.password.data)
             db.session.commit()
             flash('Your password has been updated! You are now able to log in', 'success')
             return redirect(url_for('login'))
@@ -346,6 +349,7 @@ def reset_token(token):
     except jwt.InvalidTokenError:
         flash('Invalid password reset link.', 'danger')
         return redirect(url_for('reset_request'))
+
 
 # Error handling routes
 @app.errorhandler(404)
