@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger.addHandler(log_handler)
 
+# JWT token generation for access, refresh, email verification, and password reset
 def generate_access_token(identity):
     payload = {
         'identity': identity,
@@ -40,6 +41,21 @@ def generate_refresh_token(identity):
     }
     return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
 
+def generate_verification_token(identity):
+    payload = {
+        'identity': identity,
+        'exp': datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
+    }
+    return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+
+def generate_reset_token(identity):
+    payload = {
+        'identity': identity,
+        'exp': datetime.utcnow() + timedelta(hours=1)  # Token expires in 1 hour
+    }
+    return jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+
+# Token required decorator for protecting routes
 def token_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -55,8 +71,9 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+# Function to send verification email
 def send_verification_email(user):
-    token = user.get_verification_token()
+    token = generate_verification_token(user.id)
     msg = Message('Email Verification', sender='noreply@demo.com', recipients=[user.email])
     msg.body = f'''To verify your email, visit the following link:
 {url_for('verify_email', token=token, _external=True)}
@@ -65,6 +82,7 @@ If you did not create an account, please ignore this email.
 '''
     mail.send(msg)
 
+# Home route
 @app.route("/")
 @app.route("/home")
 def home():
@@ -76,10 +94,12 @@ def home():
         logger.error(f"Error in home route: {str(e)}")
         abort(500)
 
+# About route
 @app.route("/about")
 def about():
     return render_template('about.html', title='About')
 
+# Registration route
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -100,18 +120,29 @@ def register():
             db.session.rollback()
     return render_template('register.html', title='Register', form=form)
 
+# Email verification route
 @app.route("/verify_email/<token>", methods=['GET'])
 def verify_email(token):
-    user = User.verify_verification_token(token)
-    if user:
-        user.verified = True
-        db.session.commit()
-        flash('Your email has been verified. You can now log in.', 'success')
-        return redirect(url_for('login'))
-    else:
-        flash('The verification link is invalid or expired.', 'danger')
+    try:
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+        user_id = data['identity']
+        user = User.query.get(user_id)
+        if user:
+            user.verified = True
+            db.session.commit()
+            flash('Your email has been verified. You can now log in.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('The verification link is invalid or expired.', 'danger')
+            return redirect(url_for('home'))
+    except jwt.ExpiredSignatureError:
+        flash('The verification link has expired.', 'danger')
+        return redirect(url_for('home'))
+    except jwt.InvalidTokenError:
+        flash('Invalid verification link.', 'danger')
         return redirect(url_for('home'))
 
+# Login route
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -138,7 +169,7 @@ def login():
             flash('An error occurred. Please try again later.', 'danger')
     return render_template('login.html', title='Login', form=form)
 
-
+# Logout route
 @app.route("/logout")
 def logout():
     logout_user()
@@ -146,6 +177,7 @@ def logout():
     response.delete_cookie('x-access-token')
     return response
 
+# Function to save profile pictures
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
     _, f_ext = os.path.splitext(form_picture.filename)
@@ -157,6 +189,7 @@ def save_picture(form_picture):
     i.save(picture_path)
     return picture_fn
 
+# Account route
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
@@ -181,6 +214,7 @@ def account():
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', title='Account', image_file=image_file, form=form)
 
+# New post route
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
@@ -198,11 +232,17 @@ def new_post():
             db.session.rollback()
     return render_template('create_post.html', title='New Post', form=form, legend='New Post')
 
+# Post details route
 @app.route("/post/<int:post_id>")
 def post(post_id):
-    post = Post.query.get_or_404(post_id)
-    return render_template('post.html', title=post.title, post=post)
+    try:
+        post = Post.query.get_or_404(post_id)
+        return render_template('post.html', title=post.title, post=post)
+    except Exception as e:
+        logger.error(f"Error in post route: {str(e)}")
+        abort(500)
 
+# Update post route
 @app.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
 @login_required
 def update_post(post_id):
@@ -226,6 +266,7 @@ def update_post(post_id):
         form.content.data = post.content
     return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
 
+# Delete post route
 @app.route("/post/<int:post_id>/delete", methods=['POST'])
 @login_required
 def delete_post(post_id):
@@ -236,33 +277,25 @@ def delete_post(post_id):
         db.session.delete(post)
         db.session.commit()
         flash('Your post has been deleted!', 'success')
+        return redirect(url_for('home'))
     except Exception as e:
         logger.error(f"Error in delete_post route: {str(e)}")
         flash('An error occurred. Please try again later.', 'danger')
         db.session.rollback()
-    return redirect(url_for('home'))
 
+# User posts route
 @app.route("/user/<string:username>")
 def user_posts(username):
-    page = request.args.get('page', 1, type=int)
-    user = User.query.filter_by(username=username).first_or_404()
-    posts = Post.query.filter_by(author=user).order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
-    return render_template('user_posts.html', posts=posts, user=user)
+    try:
+        page = request.args.get('page', 1, type=int)
+        user = User.query.filter_by(username=username).first_or_404()
+        posts = Post.query.filter_by(author=user).order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
+        return render_template('user_posts.html', posts=posts, user=user)
+    except Exception as e:
+        logger.error(f"Error in user_posts route: {str(e)}")
+        abort(500)
 
-def send_reset_email(user):
-    token = user.get_reset_token()
-    msg = Message('Password Reset Request',
-                  sender='noreply@demo.com',
-                  recipients=[user.email])
-    msg.body = f'''To reset your password, visit the following link:
-{url_for('reset_token', token=token, _external=True)}
-
-If you did not make this request then simply ignore this email and no changes will be made.
-'''
-    mail.send(msg)
-    flash('An email has been sent with instructions to reset your password.', 'info')
-    return redirect(url_for('login'))
-
+# Request password reset route
 @app.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
     if current_user.is_authenticated:
@@ -270,38 +303,60 @@ def reset_request():
     form = RequestResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
-        send_reset_email(user)
+        if user:
+            send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('login'))
     return render_template('reset_request.html', title='Reset Password', form=form)
 
+# Send password reset email
+def send_reset_email(user):
+    token = generate_reset_token(user.id)
+    msg = Message('Password Reset Request', sender='noreply@demo.com', recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{url_for('reset_token', token=token, _external=True)}
+
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    mail.send(msg)
+
+# Reset password route
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
     if current_user.is_authenticated:
         return redirect(url_for('home'))
-    user = User.verify_reset_token(token)
-    if user is None:
-        flash('That is an invalid or expired token', 'warning')
+    try:
+        data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+        user_id = data['identity']
+        user = User.query.get(user_id)
+        if user is None:
+            flash('That is an invalid or expired token', 'warning')
+            return redirect(url_for('reset_request'))
+        form = ResetPasswordForm()
+        if form.validate_on_submit():
+            hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user.password = hashed_password
+            db.session.commit()
+            flash('Your password has been updated! You are now able to log in', 'success')
+            return redirect(url_for('login'))
+        return render_template('reset_token.html', title='Reset Password', form=form)
+    except jwt.ExpiredSignatureError:
+        flash('The password reset link has expired.', 'danger')
         return redirect(url_for('reset_request'))
-    form = ResetPasswordForm()
-    if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user.password = hashed_password
-        db.session.commit()
-        flash('Your password has been updated! You are now able to log in', 'success')
-        return redirect(url_for('login'))
-    return render_template('reset_token.html', title='Reset Password', form=form)
+    except jwt.InvalidTokenError:
+        flash('Invalid password reset link.', 'danger')
+        return redirect(url_for('reset_request'))
 
-# Error handling for 403 Forbidden error
-@app.errorhandler(403)
-def forbidden_error(error):
-    return render_template('errors/403.html'), 403
-
-# Error handling for 404 Not Found error
+# Error handling routes
 @app.errorhandler(404)
 def not_found_error(error):
     return render_template('errors/404.html'), 404
 
-# Error handling for 500 Internal Server Error
+@app.errorhandler(403)
+def forbidden_error(error):
+    return render_template('errors/403.html'), 403
+
 @app.errorhandler(500)
 def internal_error(error):
-    db.session.rollback()  # Rollback any database changes due to the error
-    return render_template('errors/500.html'), 500    
+    db.session.rollback()
+    return render_template('errors/500.html'), 500
