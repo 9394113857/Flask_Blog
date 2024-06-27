@@ -4,7 +4,12 @@ This repository contains the source code for a Flask-based blog application.
 
 ## Setup Instructions
 
-1. **Clone the Repository:** `git clone --brach raghu https://github.com/9394113857/Flask_Blog.git && cd Flask_Blog`
+
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/9394113857/Flask_Blog.git
+   cd Flask_Blog
 
 2. **Set Up and Activate Virtual Environment:**
    - **Windows:** `py -m venv flask-project-env && .\flask-project-env\Scripts\activate.bat && cd ..`
