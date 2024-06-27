@@ -1,22 +1,23 @@
-# Flask Blog
+# Flask Blog Setup
 
 This repository contains the source code for a Flask-based blog application.
 
-## Main Repository Link
-[Flask Blog Repository](https://github.com/9394113857/Flask_Blog/tree/raghu)
+## Setup Instructions
 
-## Branch: raghu
+1. **Clone the Repository:** `git clone https://github.com/9394113857/Flask_Blog.git && cd Flask_Blog`
 
-This branch contains specific modifications or features related to 'raghu'.
+2. **Set Up and Activate Virtual Environment:**
+   - **Windows:** `py -m venv flask-project-env && .\flask-project-env\Scripts\activate.bat && cd ..`
+   - **Linux/Mac:** `python3 -m venv flask-project-env && source flask-project-env/bin/activate && cd ..`
 
-### Repository Links
+3. **Install Dependencies:** `pip install -r requirements.txt`
 
-- [Main Repository - Branch: raghu](https://github.com/9394113857/Flask_Blog/tree/raghu)
-- [Clone Command for 'raghu' Branch](https://github.com/9394113857/Flask_Blog.git)
+4. **Run the Flask Application:** `py app.py`
 
-### Setup Instructions
+   This will start the Flask server. Open your web browser and go to `http://localhost:5000` to view the application.
 
-1. Clone the repository and switch to the 'raghu' branch:
-   ```bash
-   git clone --branch raghu https://github.com/9394113857/Flask_Blog.git
-   cd Flask_Blog
+## Notes
+
+- Replace `py` with `python` or `python3` depending on your system.
+- Ensure your virtual environment (`flask-project-env`) is activated before running commands.
+- Adjust paths and commands based on your specific operating system requirements.
