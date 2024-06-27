@@ -1,0 +1,6 @@
+27-6-2024
+After 5 PM from Office System
+
+At the time of registration and password changes are storing in Password History table 
+to track and dont allow at password change time if old password means not alloing all this done today from office system okay.
+
