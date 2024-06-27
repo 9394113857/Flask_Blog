@@ -1,0 +1,11 @@
+# Remove all files and directories from the Git index (staging area)
+git rm -r --cached .
+
+# Add all files and directories back to the Git index (staging area)
+git add .
+
+# Commit the changes with a descriptive message
+git commit -m "Fixed gitignore to exclude __pycache__ and .pyc files"
+
+=====================================================================
+
