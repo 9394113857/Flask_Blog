@@ -74,12 +74,9 @@ def token_required(f):
 # Function to send verification email
 def send_verification_email(user):
     token = generate_verification_token(user.id)
+    verification_link = url_for('verify_email', token=token, _external=True)
     msg = Message('Email Verification', sender='noreply@demo.com', recipients=[user.email])
-    msg.body = f'''To verify your email, visit the following link:
-{url_for('verify_email', token=token, _external=True)}
-
-If you did not create an account, please ignore this email.
-'''
+    msg.html = render_template('verification_email.html', user=user, verification_link=verification_link)
     mail.send(msg)
 
 # Home route
@@ -312,15 +309,12 @@ def reset_request():
         return redirect(url_for('login'))
     return render_template('reset_request.html', title='Reset Password', form=form)
 
-# Send password reset email
+# Function to send password reset email
 def send_reset_email(user):
     token = generate_reset_token(user.id)
+    reset_link = url_for('reset_token', token=token, _external=True)
     msg = Message('Password Reset Request', sender='noreply@demo.com', recipients=[user.email])
-    msg.body = f'''To reset your password, visit the following link:
-{url_for('reset_token', token=token, _external=True)}
-
-If you did not make this request then simply ignore this email and no changes will be made.
-'''
+    msg.html = render_template('reset_password_email.html', user=user, reset_link=reset_link)
     mail.send(msg)
 
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
