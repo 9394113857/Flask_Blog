@@ -6,3 +6,13 @@ to track and dont allow at password change time if old password means not alloin
 
 # Now pull these changes to Laptop:-
 
+
+---------------------------------------------
+
+As of July 7, 2024, the following functionalities are implemented in the application:
+
+User registration.
+Email verification.
+User login.
+Password reset functionality, which ensures that old passwords cannot be reused.
+I am committing these changes to my Git repository.
