@@ -3,58 +3,74 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import os
 
-# ----------------------------------
-# Correct DB path (Flask instance DB)
-# ----------------------------------
+# -------------------------------------------------
+# DB PATH (Flask-Migrate authoritative DB)
+# -------------------------------------------------
 DB_PATH = os.path.join("instance", "site.db")
 
 if not os.path.exists(DB_PATH):
     messagebox.showerror(
         "Database Not Found",
-        f"Database not found at:\n{DB_PATH}"
+        f"Database not found at:\n{DB_PATH}\n\n"
+        "Run `flask db upgrade` first."
     )
     raise SystemExit
 
 
-# ----------------------------------
-# Database helpers
-# ----------------------------------
+# -------------------------------------------------
+# DATABASE HELPERS (READ-ONLY)
+# -------------------------------------------------
 def get_tables():
     conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-    tables = [row[0] for row in cursor.fetchall()]
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT name FROM sqlite_master
+        WHERE type='table'
+        ORDER BY name;
+    """)
+    tables = [r[0] for r in cur.fetchall()]
     conn.close()
     return tables
 
 
-def get_table_data(table_name):
+def get_table_data(table):
     conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
+    cur = conn.cursor()
 
-    cursor.execute(f"PRAGMA table_info({table_name});")
-    columns = [col[1] for col in cursor.fetchall()]
+    cur.execute(f"PRAGMA table_info({table});")
+    columns = [c[1] for c in cur.fetchall()]
 
-    cursor.execute(f"SELECT * FROM {table_name};")
-    rows = cursor.fetchall()
+    cur.execute(f"SELECT * FROM {table};")
+    rows = cur.fetchall()
 
     conn.close()
     return columns, rows
 
 
-# ----------------------------------
-# GUI actions
-# ----------------------------------
+def get_alembic_version():
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    try:
+        cur.execute("SELECT version_num FROM alembic_version;")
+        row = cur.fetchone()
+        return row[0] if row else "Unknown"
+    except:
+        return "Not migrated"
+    finally:
+        conn.close()
+
+
+# -------------------------------------------------
+# GUI ACTIONS
+# -------------------------------------------------
 def load_table():
-    selected = table_listbox.get(tk.ACTIVE)
-    if not selected:
-        messagebox.showwarning("No Selection", "Please select a table")
+    table = table_listbox.get(tk.ACTIVE)
+    if not table:
         return
 
     tree.delete(*tree.get_children())
 
-    columns, rows = get_table_data(selected)
-
+    columns, rows = get_table_data(table)
     tree["columns"] = columns
     tree["show"] = "headings"
 
@@ -66,14 +82,18 @@ def load_table():
         tree.insert("", tk.END, values=row)
 
 
-# ----------------------------------
-# Main window
-# ----------------------------------
+# -------------------------------------------------
+# MAIN WINDOW
+# -------------------------------------------------
 root = tk.Tk()
-root.title("Flask SQLite DB Viewer")
-root.geometry("950x520")
+alembic_ver = get_alembic_version()
+root.title(f"Flask DB Viewer | Migration: {alembic_ver}")
+root.geometry("1000x550")
 root.configure(bg="#1e1e1e")
 
+# -------------------------------------------------
+# STYLES
+# -------------------------------------------------
 style = ttk.Style()
 style.theme_use("default")
 
@@ -93,22 +113,22 @@ style.configure(
     font=("Segoe UI", 10, "bold"),
 )
 
-# ----------------------------------
-# Left panel (Tables)
-# ----------------------------------
-left_frame = tk.Frame(root, bg="#252526", width=220)
-left_frame.pack(side=tk.LEFT, fill=tk.Y)
+# -------------------------------------------------
+# LEFT PANEL
+# -------------------------------------------------
+left = tk.Frame(root, bg="#252526", width=240)
+left.pack(side=tk.LEFT, fill=tk.Y)
 
 tk.Label(
-    left_frame,
-    text="Tables",
+    left,
+    text="Tables (Alembic)",
     bg="#252526",
     fg="white",
     font=("Segoe UI", 12, "bold"),
 ).pack(pady=10)
 
 table_listbox = tk.Listbox(
-    left_frame,
+    left,
     bg="#1e1e1e",
     fg="white",
     selectbackground="#007acc",
@@ -116,15 +136,11 @@ table_listbox = tk.Listbox(
 )
 table_listbox.pack(fill=tk.BOTH, expand=True, padx=10)
 
-tables = get_tables()
-if not tables:
-    table_listbox.insert(tk.END, "No tables found")
-else:
-    for table in tables:
-        table_listbox.insert(tk.END, table)
+for t in get_tables():
+    table_listbox.insert(tk.END, t)
 
 tk.Button(
-    left_frame,
+    left,
     text="Load Table",
     command=load_table,
     bg="#007acc",
@@ -133,20 +149,20 @@ tk.Button(
     relief=tk.FLAT,
 ).pack(pady=12)
 
-# ----------------------------------
-# Right panel (Data)
-# ----------------------------------
-right_frame = tk.Frame(root, bg="#1e1e1e")
-right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+# -------------------------------------------------
+# RIGHT PANEL
+# -------------------------------------------------
+right = tk.Frame(root, bg="#1e1e1e")
+right.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
-tree = ttk.Treeview(right_frame)
+tree = ttk.Treeview(right)
 tree.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-scrollbar = ttk.Scrollbar(right_frame, orient=tk.VERTICAL, command=tree.yview)
-tree.configure(yscrollcommand=scrollbar.set)
-scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+scroll = ttk.Scrollbar(right, orient=tk.VERTICAL, command=tree.yview)
+tree.configure(yscrollcommand=scroll.set)
+scroll.pack(side=tk.RIGHT, fill=tk.Y)
 
-# ----------------------------------
-# Run app
-# ----------------------------------
+# -------------------------------------------------
+# RUN
+# -------------------------------------------------
 root.mainloop()
