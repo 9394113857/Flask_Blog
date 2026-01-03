@@ -1,0 +1,18 @@
+27-6-2024
+After 5 PM from Office System
+
+At the time of registration and password changes are storing in Password History table 
+to track and dont allow at password change time if old password means not alloing all this done today from office system okay.
+
+# Now pull these changes to Laptop:-
+
+
+---------------------------------------------
+
+As of July 7, 2024, the following functionalities are implemented in the application:
+
+User registration.
+Email verification.
+User login.
+Password reset functionality, which ensures that old passwords cannot be reused.
+I am committing these changes to my Git repository.
