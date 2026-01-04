@@ -1,0 +1,61 @@
+# ✅ FINAL CORRECT COMMAND (PowerShell):-
+$env:DATABASE_URL="postgresql+psycopg://neondb_owner:npg_CDJez8h5Faiw@ep-little-glitter-a115bkhr-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
+# ================================
+# START FLASK SHELL FIRST
+  flask shell
+# ================================
+
+from flaskblog import db
+from flaskblog.models import User, Post, Comment, PostLike
+
+print("\n--- TABLES ---")
+print(db.metadata.tables.keys())
+
+print("\n--- USERS ---")
+for u in User.query.all():
+    print(u.id, u.username, u.email, u.verified)
+
+print("\n--- POSTS ---")
+for p in Post.query.all():
+    print(p.id, p.title, p.author.username)
+
+print("\n--- COMMENTS ---")
+for c in Comment.query.all():
+    print(c.id, c.content, c.user_id, c.post_id)
+
+print("\n--- LIKES ---")
+for l in PostLike.query.all():
+    print("User:", l.user_id, "Post:", l.post_id)
+
+print("\n--- POSTS + LIKE COUNTS ---")
+for p in Post.query.all():
+    count = PostLike.query.filter_by(post_id=p.id).count()
+    print(p.id, p.title, "Likes:", count)
+
+print("\n--- COMMENTS PER POST ---")
+for p in Post.query.all():
+    comments = Comment.query.filter_by(post_id=p.id).all()
+    print("Post:", p.id, "Comments:", len(comments))
+
+print("\n--- RAW SQL (USERS) ---")
+rows = db.session.execute(db.text("SELECT id, username, email FROM user")).fetchall()
+for r in rows:
+    print(r)
+
+print("\n--- DONE ---")
+
+🚪 EXIT FLASK SHELL
+exit()
+________________________________________
+🧠 WHY THIS IS PERFECT FOR ML NEXT
+You now verify everything locally:
+•	✅ Users
+•	✅ Posts
+•	✅ Likes
+•	✅ Comments
+•	✅ Relations
+•	✅ Clean schema
+•	✅ Stable data source
+This is exactly how ML engineers validate data before pipelines.
+

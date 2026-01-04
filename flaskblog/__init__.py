@@ -4,33 +4,34 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
-import os
 
 app = Flask(__name__)
 
-# ---------------- CONFIG ----------------
+# ---------------- SECURITY ----------------
 app.config["SECRET_KEY"] = "5791628bb0b13ce0c676dfde280ba245"
 app.config["SECURITY_PASSWORD_SALT"] = "my_precious_two"
 
-# DB URL (SQLite local / Neon cloud via env)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-    "DATABASE_URL", "sqlite:///site.db"
+# ---------------- DATABASE (HARDCODED NEON) ----------------
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    "postgresql+psycopg://neondb_owner:npg_CDJez8h5Faiw"
+    "@ep-little-glitter-a115bkhr-pooler.ap-southeast-1.aws.neon.tech"
+    "/neondb?sslmode=require&channel_binding=require"
 )
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # ---------------- EXTENSIONS ----------------
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)   # 🔥 THIS IS THE KEY 🔥
+migrate = Migrate(app, db)   # 🔥 migrations enabled
 bcrypt = Bcrypt(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 
-mail = Mail(app) 
+mail = Mail(app)
 
-# ---------------- MAIL CONFIG ----------------
+# ---------------- MAIL ----------------
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
 app.config["MAIL_PORT"] = 587
 app.config["MAIL_USE_TLS"] = True
@@ -39,8 +40,3 @@ app.config["MAIL_PASSWORD"] = "krqc vcmn sqmt kqlv"
 
 # ---------------- ROUTES ----------------
 from flaskblog import routes
-
-# This is our last line of code in __init__.py file for multiple environments
-# so local or render automatically detects the app variable and runs the app to that database is that finalized as of this version automatically.
-
-
