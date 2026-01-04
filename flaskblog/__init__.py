@@ -28,7 +28,7 @@ login_manager = LoginManager(app)
 login_manager.login_view = "login"
 login_manager.login_message_category = "info"
 
-mail = Mail(app)
+mail = Mail(app) 
 
 # ---------------- MAIL CONFIG ----------------
 app.config["MAIL_SERVER"] = "smtp.gmail.com"
@@ -39,3 +39,8 @@ app.config["MAIL_PASSWORD"] = "krqc vcmn sqmt kqlv"
 
 # ---------------- ROUTES ----------------
 from flaskblog import routes
+
+# This is our last line of code in __init__.py file for multiple environments
+# so local or render automatically detects the app variable and runs the app to that database is that finalized as of this version automatically.
+
+
