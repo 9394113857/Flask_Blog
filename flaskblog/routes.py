@@ -32,31 +32,49 @@ def save_picture(form_picture):
 
 
 def send_verification_email(user):
-    token = user.get_verification_token()
-    msg = Message(
-        "Verify Your Email",
-        sender="noreply@demo.com",
-        recipients=[user.email]
-    )
-    msg.body = f"""
+    try:
+        token = user.get_verification_token()
+
+        msg = Message(
+            "Verify Your Email",
+            sender=app.config.get("MAIL_DEFAULT_SENDER"),
+            recipients=[user.email]
+        )
+
+        msg.body = f"""
 Verify your email:
 {url_for('verify_email', token=token, _external=True)}
 """
-    mail.send(msg)
+
+        print("Before mail.send()")
+        mail.send(msg)
+        print("After mail.send()")
+
+    except Exception as e:
+        print(f"MAIL ERROR: {e}")
 
 
 def send_reset_email(user):
-    token = user.get_reset_token()
-    msg = Message(
-        "Password Reset",
-        sender="noreply@demo.com",
-        recipients=[user.email]
-    )
-    msg.body = f"""
-Reset your password:
+    try:
+        token = user.get_reset_token()
+
+        msg = Message(
+            "Password Reset Request",
+            sender=app.config.get("MAIL_DEFAULT_SENDER"),
+            recipients=[user.email]
+        )
+
+        msg.body = f"""
+To reset your password visit:
 {url_for('reset_token', token=token, _external=True)}
 """
-    mail.send(msg)
+
+        print("Before reset mail.send()")
+        mail.send(msg)
+        print("After reset mail.send()")
+
+    except Exception as e:
+        print(f"RESET MAIL ERROR: {e}")
 
 # ==================================================
 # HOME
