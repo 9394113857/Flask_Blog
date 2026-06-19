@@ -1,0 +1,41 @@
+(venv) PS E:\New Experiments\Flask_Blog> copy flaskblog\static\profile_pics\07d5e3095de62b2d.jpg flaskblog\static\profile_pics\default.jpg
+(venv) PS E:\New Experiments\Flask_Blog> 
+(venv) PS E:\New Experiments\Flask_Blog> 
+
+
+    Directory: E:\New Experiments\Flask_Blog\flaskblog\static\profile_pics
+
+
+Mode                 LastWriteTime         Length Name                                                     
+----                 -------------         ------ ----                                                     
+-a----        19-06-2026  12:23 PM           3570 07d5e3095de62b2d.jpg                                     
+-a----        19-06-2026  12:23 PM           1956 108360bbee09f16f.jpg                                     
+-a----        19-06-2026  12:23 PM           1956 2bc73cc993024ba4.jpg                                     
+-a----        19-06-2026  04:20 PM           3264 477443f07e996c93.jpg                                     
+-a----        19-06-2026  04:31 PM           3264 531b0537314f5f2b.jpg                                     
+-a----        19-06-2026  12:23 PM          10639 697c027e27350f6f.png                                     
+-a----        19-06-2026  04:31 PM           1997 c9ec3d1417f56c16.jpg                                     
+-a----        19-06-2026  12:23 PM           3570 default.jpg                                              
+-a----        19-06-2026  12:23 PM           3860 f45e46b57e4cf441.jpg                                     
+
+
+(venv) PS E:\New Experiments\Flask_Blog> 
+(venv) PS E:\New Experiments\Flask_Blog> 
+
+Perfect bro ✅
+
+Now default.jpg exists:
+
+default.jpg
+
+Next do:
+
+git add flaskblog/static/profile_pics/default.jpg
+git commit -m "Add default profile image"
+git push origin main
+
+After Render redeploys:
+
+Account page image 404 error ✅ fixed
+Default profile image loads ✅
+
