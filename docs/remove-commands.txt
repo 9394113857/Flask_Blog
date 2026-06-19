@@ -1,16 +1,19 @@
 Brooo 😎 in VS Code PowerShell:
 
-Remove migrations folder
+# Remove migrations folder
 Remove-Item -Recurse -Force .\migrations
-Verify
+
+# Verify
 Test-Path .\migrations
 
 Expected:
 
 False
-Remove instance folder
+
+# Remove instance folder
 Remove-Item -Recurse -Force .\instance
-Verify
+
+# Verify
 Test-Path .\instance
 
 Expected:
