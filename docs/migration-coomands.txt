@@ -1,0 +1,126 @@
+First Time Setup
+
+Activate venv:
+
+.\venv\Scripts\activate
+
+Initialize migrations:
+
+flask db init
+
+Creates:
+
+migrations/
+
+only once.
+
+Generate Migration
+flask db migrate -m "Initial migration"
+
+Alembic reads:
+
+User
+Post
+Comment
+PostLike
+PasswordHistory
+
+from models.py
+
+and generates migration script.
+
+Create SQLite Database
+flask db upgrade
+
+This creates:
+
+site.db
+
+and tables.
+
+Future Change Example
+
+Add:
+
+phone = db.Column(db.String(20))
+
+to User model.
+
+Then:
+
+flask db migrate -m "Added phone column"
+
+Then:
+
+flask db upgrade
+
+Done.
+
+No manual table creation.
+
+Exactly like your microservices.
+
+SQLite + Env
+
+Your .env
+
+DATABASE_URL=sqlite:///site.db
+
+Current:
+
+SQLite
+
+Future:
+
+DATABASE_URL=postgresql+psycopg://...
+
+Now:
+
+flask db upgrade
+
+creates PostgreSQL tables instead.
+
+No code changes.
+
+Final Structure I Would Use
+Flask_Blog
+│
+├── .env
+├── .gitignore
+├── run.py
+│
+├── migrations/
+│
+└── flaskblog/
+    ├── __init__.py
+    ├── models.py
+    ├── routes.py
+    ├── forms.py
+Commands You Should Run
+
+Only once:
+
+pip install flask-migrate
+
+flask db init
+
+Every time models change:
+
+flask db migrate -m "message"
+flask db upgrade
+
+Run application:
+
+py run.py
+
+This approach is much closer to the Flask microservices you've already built:
+
+✅ Models in code
+✅ SQLite locally via .env
+✅ PostgreSQL later via .env
+✅ Alembic migrations
+✅ No db.create_all()
+✅ Schema versioning
+✅ Industry-standard workflow
+
+That's the setup I would use going forward for this blog project. 🚀

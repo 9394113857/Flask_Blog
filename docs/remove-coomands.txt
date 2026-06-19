@@ -1,0 +1,39 @@
+Brooo 😎 in VS Code PowerShell:
+
+Remove migrations folder
+Remove-Item -Recurse -Force .\migrations
+Verify
+Test-Path .\migrations
+
+Expected:
+
+False
+Remove instance folder
+Remove-Item -Recurse -Force .\instance
+Verify
+Test-Path .\instance
+
+Expected:
+
+False
+All 4 Commands Together:- ✅✅
+Remove-Item -Recurse -Force .\migrations
+
+Test-Path .\migrations
+
+Remove-Item -Recurse -Force .\instance
+
+Test-Path .\instance
+
+Expected:
+
+False
+False
+
+After that your project is clean and ready for:
+
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+
+when you're ready to recreate migrations properly. 🚀

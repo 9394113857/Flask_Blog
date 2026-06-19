@@ -1,0 +1,42 @@
+(venv) PS E:\New Experiments\Flask_Blog> 
+(venv) PS E:\New Experiments\Flask_Blog> flask db init
+Creating directory 'E:\\New Experiments\\Flask_Blog\\migrations' ...  done
+Creating directory 'E:\\New Experiments\\Flask_Blog\\migrations\\versions' ...  done
+Generating E:\New Experiments\Flask_Blog\migrations\alembic.ini ...  done
+Generating E:\New Experiments\Flask_Blog\migrations\env.py ...  done
+Generating E:\New Experiments\Flask_Blog\migrations\README ...  done
+Generating E:\New Experiments\Flask_Blog\migrations\script.py.mako ...  done
+Please edit configuration/connection/logging settings in 'E:\\New Experiments\\Flask_Blog\\migrations\\alembic.ini' before proceeding.
+(venv) PS E:\New Experiments\Flask_Blog> flask db init
+Error: Directory migrations already exists and is not empty
+(venv) PS E:\New Experiments\Flask_Blog> 
+
+=======================================================
+
+(venv) PS E:\New Experiments\Flask_Blog> flask db migrate -m "Initial migration"
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.autogenerate.compare] Detected added table 'user'
+INFO  [alembic.autogenerate.compare] Detected added table 'password_history'
+INFO  [alembic.autogenerate.compare] Detected added table 'post'
+INFO  [alembic.autogenerate.compare] Detected added table 'comment'
+INFO  [alembic.autogenerate.compare] Detected added table 'post_like'
+Generating E:\New Experiments\Flask_Blog\migrations\versions\c5f3429edf90_initial_migration.py ...  done
+(venv) PS E:\New Experiments\Flask_Blog> flask db migrate -m "Initial migration"
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+ERROR [flask_migrate] Error: Target database is not up to date.
+(venv) PS E:\New Experiments\Flask_Blog> 
+
+=======================================================
+
+(venv) PS E:\New Experiments\Flask_Blog> flask db upgrade
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> c5f3429edf90, Initial migration
+(venv) PS E:\New Experiments\Flask_Blog> flask db upgrade
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+(venv) PS E:\New Experiments\Flask_Blog>
+
+
