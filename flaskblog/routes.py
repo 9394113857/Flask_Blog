@@ -260,16 +260,6 @@ def new_post():
         legend="New Post"
     )
 
-# Post details route
-@app.route("/post/<int:post_id>")
-def post(post_id):
-    try:
-        post = Post.query.get_or_404(post_id)
-        return render_template('post.html', title=post.title, post=post)
-    except Exception as e:
-        logger.error(f"Error in post route: {str(e)}")
-        abort(500)
-
 # Update post route
 @app.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
 @login_required
