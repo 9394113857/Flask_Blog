@@ -1,0 +1,117 @@
+
+(venv) PS E:\New Experiments\Flask_Blog> flask db init
+Creating directory 'E:\\New Experiments\\Flask_Blog\\migrations' ...  done
+Creating directory 'E:\\New Experiments\\Flask_Blog\\migrations\\versions' ...  done
+Generating E:\New Experiments\Flask_Blog\migrations\script.py.mako ...  done
+Please edit configuration/connection/logging settings in 'E:\\New Experiments\\Flask_Blog\\migrations\\alembic.ini' before proceeding.
+
+
+(venv) PS E:\New Experiments\Flask_Blog> flask db migrate -m "Initial migration"
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.autogenerate.compare] Detected added table 'user'
+INFO  [alembic.autogenerate.compare] Detected added table 'password_history'
+INFO  [alembic.autogenerate.compare] Detected added table 'post'
+INFO  [alembic.autogenerate.compare] Detected added table 'comment'
+INFO  [alembic.autogenerate.compare] Detected added table 'post_like'
+Generating E:\New Experiments\Flask_Blog\migrations\versions\c4a2a12a235e_initial_migration.py ...  done
+
+
+(venv) PS E:\New Experiments\Flask_Blog> flask db upgrade
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> c4a2a12a235e, Initial migration
+(venv) PS E:\New Experiments\Flask_Blog> 
+(venv) PS E:\New Experiments\Flask_Blog> 
+(venv) PS E:\New Experiments\Flask_Blog> 
+(venv) PS E:\New Experiments\Flask_Blog> 
+
+Yes bro 👍 Local SQLite migration is now completely fresh and successful.
+
+You got:
+
+Detected added table 'user'
+Detected added table 'password_history'
+Detected added table 'post'
+Detected added table 'comment'
+Detected added table 'post_like'
+
+and
+
+Running upgrade -> c4a2a12a235e, Initial migration
+
+That means locally all 5 tables were created.
+
+Verify locally
+
+# Run flask shell:
+
+flask shell
+
+Then:
+
+from flaskblog import db
+print(db.engine.table_names())
+
+If SQLAlchemy 2.x gives error:
+
+from sqlalchemy import inspect
+from flaskblog import db
+
+print(inspect(db.engine).get_table_names())
+
+Expected output:
+
+[
+ 'user',
+ 'post',
+ 'password_history',
+ 'comment',
+ 'post_like',
+ 'alembic_version'
+]
+
+# Exit flask shell:
+Use exit() or Ctrl-Z plus Return to exit
+
+Even easier
+
+Open SQLite DB:
+
+python db_viewer_gui.py
+
+or
+
+sqlite3 instance/site.db
+.tables
+
+(whatever DB filename your project uses).
+
+You should see:
+
+alembic_version
+comment
+password_history
+post
+post_like
+user
+Important
+
+Your local database is now healthy.
+
+The remaining issue is Supabase, because:
+
+relation "post_like" does not exist
+
+was coming from PostgreSQL on Render.
+
+So after you verify local tables, next step is:
+
+flask db current
+flask db history
+
+with the Supabase DATABASE_URL set.
+
+Then we'll fix the PostgreSQL migration state and create the missing post_like / comment tables there without touching existing users/posts.
+
+First verify local tables exist and paste the output.

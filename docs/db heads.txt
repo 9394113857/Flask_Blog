@@ -1,0 +1,75 @@
+Send me only these two outputs
+flask db heads
+
+and
+
+ls migrations/versions
+
+After that I'll tell you whether:
+
+we need to merge migration heads, or
+upgrade Supabase, or
+create a new migration for post_like and comment.
+
+No database changes yet. Safe inspection only. ✅
+
+Perfect bro ✅
+
+Now we know the exact problem:
+
+1000f9d5caaf (head)
+c5f3429edf90 (head)
+
+You have 2 migration heads, which is why:
+
+flask db upgrade
+
+fails.
+
+Safe next step (no data loss)
+
+Run:
+
+flask db merge -m "merge migration heads" 1000f9d5caaf c5f3429edf90
+
+This does NOT touch your database.
+It only creates a new migration file that joins the two branches.
+
+Run:
+
+flask db heads
+
+Expected:
+
+<new_revision_id> (head)
+
+Only one head should remain.
+
+Then show me
+ls migrations/versions
+
+(or PowerShell)
+
+Get-ChildItem migrations\versions
+
+I want to verify the new merge migration file was created.
+
+Don't run yet
+
+❌ flask db upgrade
+
+❌ flask db migrate
+
+❌ Supabase SQL
+
+until we confirm the merge migration looks correct.
+
+First create the merge migration and show:
+
+flask db heads
+
+output afterward. Then we'll continue safely. 🚀
+
+flask db upgrade
+
+flask db current

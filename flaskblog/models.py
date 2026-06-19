@@ -123,7 +123,7 @@ class PostLike(db.Model):
     )
 
 # -------------------------------------------------
-# COMMENTS (🔥 FIXED 🔥)
+# COMMENTS (🔥 FIXED 🔥)   
 # -------------------------------------------------
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
