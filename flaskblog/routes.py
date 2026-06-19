@@ -232,26 +232,24 @@ def account():
 @login_required
 def new_post():
     form = PostForm()
+
     if form.validate_on_submit():
-<<<<<<< HEAD
         post = Post(
             title=form.title.data,
             content=form.content.data,
             author=current_user
         )
+
         db.session.add(post)
-=======
-        try:
-            post = Post(title=form.title.data, content=form.content.data, author=current_user)
-            db.session.add(post)
-            db.session.commit()
-            flash('Your post has been created!', 'success')
-            return redirect(url_for('home'))
-        except Exception as e:
-            logger.error(f"Error in new_post route: {str(e)}")
-            flash('An error occurred. Please try again later.', 'danger')
-            db.session.rollback()
-    return render_template('create_post.html', title='New Post', form=form, legend='New Post')
+        db.session.commit()
+
+        flash("Post created!", "success")
+        return redirect(url_for("home"))
+
+    return render_template(
+        "create_post.html",
+        form=form
+    )
 
 # Post details route
 @app.route("/post/<int:post_id>")
@@ -260,7 +258,7 @@ def post(post_id):
         post = Post.query.get_or_404(post_id)
         return render_template('post.html', title=post.title, post=post)
     except Exception as e:
-        logger.error(f"Error in post route: {str(e)}")
+        # logger.error(f"Error in post route: {str(e)}")
         abort(500)
 
 # Update post route
@@ -279,7 +277,7 @@ def update_post(post_id):
             flash('Your post has been updated!', 'success')
             return redirect(url_for('post', post_id=post.id))
         except Exception as e:
-            logger.error(f"Error in update_post route: {str(e)}")
+            # logger.error(f"Error in update_post route: {str(e)}")
             flash('An error occurred. Please try again later.', 'danger')
             db.session.rollback()
     elif request.method == 'GET':
@@ -287,21 +285,22 @@ def update_post(post_id):
         form.content.data = post.content
     return render_template('create_post.html', title='Update Post', form=form, legend='Update Post')
 
-# Delete post route 
-@app.route("/post/<int:post_id>/delete", methods=['POST'])
+# ==================================================
+# DELETE POST
+# ==================================================
+@app.route("/post/<int:post_id>/delete", methods=["POST"])
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
+
     if post.author != current_user:
         abort(403)
-    try:
-        db.session.delete(post)
->>>>>>> dedeepya
-        db.session.commit()
-        flash("Post created!", "success")
-        return redirect(url_for("home"))
 
-    return render_template("create_post.html", form=form)
+    db.session.delete(post)
+    db.session.commit()
+
+    flash("Post deleted!", "success")
+    return redirect(url_for("home"))
 
 # ==================================================
 # PASSWORD RESET
