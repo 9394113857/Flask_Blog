@@ -6,7 +6,6 @@ if __name__ == "__main__":
     
     
 # venv\Scripts\activate
-<<<<<<< HEAD
 # set FLASK_APP=run.py
 =======
 # $env:FLASK_APP="run.py"
@@ -27,11 +26,11 @@ if __name__ == "__main__":
 
 # # Start Flask Application ✅✅  
 # $env:FLASK_APP="run.py" # Set the FLASK_APP environment variable to run.py
-<<<<<<< HEAD
+
 # flask run --host=0.0.0.0 --port=5001 --debug  # This will auto-reload the server on code changes.
 =======
 
 # flask run --host=0.0.0.0 --port=5001 --debug  
 # # This will auto-reload the server on code changes.
->>>>>>> dedeepya
+>>>>>>> dedeep
 ###################################################    
