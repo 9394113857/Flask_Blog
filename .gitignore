@@ -1,114 +1,135 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
+# =====================================================
+
+# ENVIRONMENT VARIABLES
+
+# =====================================================
+
+.env
+.env.*
+
+# =====================================================
+
+# PYTHON CACHE
+
+# =====================================================
+
+**pycache**/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
+# =====================================================
 
-# Distribution / packaging
-.Python
+# VIRTUAL ENVIRONMENTS
+
+# =====================================================
+
+venv/
+ENV/
 env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+env.bak/
+venv.bak/
 
-# Flask specific
+# =====================================================
+
+# FLASK INSTANCE
+
+# =====================================================
+
 instance/
-flask-project-env/
 
-# PyInstaller
-*.manifest
-*.spec
+# =====================================================
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# SQLITE DATABASES
 
-# Unit test / coverage reports
+# =====================================================
+
+*.db
+*.sqlite
+*.sqlite3
+
+# =====================================================
+
+# LOG FILES
+
+# =====================================================
+
+*.log
+
+# =====================================================
+
+# PYTEST / COVERAGE
+
+# =====================================================
+
+.pytest_cache/
+.coverage
 htmlcov/
 .tox/
 .nox/
-coverage.xml
-coverage-*.xml
-.cache
-nosetests.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
 
-# Translations
-*.mo
-*.pot
+# =====================================================
 
-# Django stuff:
-*.log
-local_settings.py
+# JUPYTER
 
-# Sphinx documentation
-docs/_build/
+# =====================================================
 
-# PyBuilder
-target/
+.ipynb_checkpoints/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# =====================================================
 
-# IPython
-profile_default/
-ipython_config.py
+# IDE FILES
 
-# pyenv
-.python-version
+# =====================================================
 
-# celery beat schedule file
-celerybeat-schedule
+.vscode/
+.idea/
 
-# dotenv
-.env
+# =====================================================
 
-# virtualenv
-venv/
-ENV/
-env.bak/
-venv.bak/
-.instance
+# BUILD / DIST
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# =====================================================
 
-# Rope project settings
-.ropeproject
+build/
+dist/
+*.egg-info/
 
-# mkdocs documentation
-/site
+# =====================================================
 
-# mypy
+# TYPE CHECKERS
+
+# =====================================================
+
 .mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
 .pyre/
 
-# vs code
-.vscode/
+# =====================================================
 
-# Mac files
+# OPERATING SYSTEM FILES
+
+# =====================================================
+
 .DS_Store
+Thumbs.db
+
+# =====================================================
+
+# KEEP THESE IN GIT
+
+# =====================================================
+
+# docs/
+
+# migrations/
+
+# flaskblog/
+
+# templates/
+
+# static/
+
+# run.py
+
+# requirements.txt
+
+# README.md
