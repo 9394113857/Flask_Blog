@@ -7,3 +7,6 @@ git commit -m "Addons and Enhancements are on-going Adding In Deleveopment Mode 
 
 # Push the commit to the remote repository
 git push
+
+# Empty commit:-
+git commit --allow-empty -m "Deploy and Test Now already migrations applied now"
