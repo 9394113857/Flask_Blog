@@ -5,6 +5,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
+from psycopg import logger
 
 from flaskblog import app, db, bcrypt, mail
 from flaskblog.forms import (
@@ -232,26 +233,32 @@ def account():
 @login_required
 def new_post():
     form = PostForm()
+
     if form.validate_on_submit():
-<<<<<<< HEAD
-        post = Post(
-            title=form.title.data,
-            content=form.content.data,
-            author=current_user
-        )
-        db.session.add(post)
-=======
         try:
-            post = Post(title=form.title.data, content=form.content.data, author=current_user)
+            post = Post(
+                title=form.title.data,
+                content=form.content.data,
+                author=current_user
+            )
+
             db.session.add(post)
             db.session.commit()
-            flash('Your post has been created!', 'success')
-            return redirect(url_for('home'))
+
+            flash("Your post has been created!", "success")
+            return redirect(url_for("home"))
+
         except Exception as e:
             logger.error(f"Error in new_post route: {str(e)}")
-            flash('An error occurred. Please try again later.', 'danger')
             db.session.rollback()
-    return render_template('create_post.html', title='New Post', form=form, legend='New Post')
+            flash("An error occurred. Please try again later.", "danger")
+
+    return render_template(
+        "create_post.html",
+        title="New Post",
+        form=form,
+        legend="New Post"
+    )
 
 # Post details route
 @app.route("/post/<int:post_id>")
@@ -296,12 +303,13 @@ def delete_post(post_id):
         abort(403)
     try:
         db.session.delete(post)
->>>>>>> dedeepya
         db.session.commit()
-        flash("Post created!", "success")
+        flash("Post deleted!", "success")
         return redirect(url_for("home"))
-
-    return render_template("create_post.html", form=form)
+    except Exception as e:
+        logger.error(f"Error in delete_post route: {str(e)}")
+        flash('An error occurred. Please try again later.', 'danger')
+        db.session.rollback()
 
 # ==================================================
 # PASSWORD RESET
