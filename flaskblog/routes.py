@@ -172,7 +172,7 @@ def register():
         )
         db.session.add(user)
         db.session.commit()
-        send_verification_email(user)
+        # send_verification_email(user)
         flash("Account created! Check your email to verify.", "info")
         return redirect(url_for("login"))
 
