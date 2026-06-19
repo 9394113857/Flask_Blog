@@ -1,4 +1,6 @@
+------------
 # 19-6-26:-
+------------
 # Add all new, modified, and deleted files
 git add .
 
@@ -7,3 +9,10 @@ git commit -m "Addons and Enhancements are on-going Adding In Deleveopment Mode 
 
 # Push the commit to the remote repository
 git push
+----------------------------------------------------------------
+# Create an empty commit to trigger a build
+#git commit --allow-empty -m "Your descriptive commit message"
+
+# Create an empty commit to trigger a build
+git commit --allow-empty -m "Trigger CI build"
+-----------------------------------------------------------------
