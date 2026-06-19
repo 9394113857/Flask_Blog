@@ -9,7 +9,7 @@ Your requirements.txt now includes (among others):
 postgresql://postgres.ougrtsmyunpqfjsxxakm:Dedeepya@123@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres
 
 # 🔹 Command 1: Set DB URL (TEMP):-
-$env:DATABASE_URL="postgresql://postgres.ougrtsmyunpqfjsxxakm:Dedeepya%40123@aws-1-ap-southeast-1.pooler.supabase.com:5432/postgres"
+$env:DATABASE_URL="postgresql://postgres.siwznpwcwafcqahwzhlw:Raghunadh_1992@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres"
 
 ✅ This sets DB URL only for this terminal session.
 
