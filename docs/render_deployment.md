@@ -32,8 +32,9 @@ Key:
 DATABASE_URL
 
 Value:
-postgresql://postgres.xxxxx:your_password@aws-1-ap-south-1.pooler.supabase.com:5432/postgres?sslmode=require
+postgresql://postgres.siwznpwcwafcqahwzhlw:Raghunadh_1992@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres?sslmode=require
 
+postgresql://postgres.siwznpwcwafcqahwzhlw:Raghunadh_1992@aws-1-ap-northeast-1.pooler.supabase.com:5432/postgres
 ---
 
 ### SECRET_KEY
