@@ -158,3 +158,9 @@ echo $env:FLASK_APP
 
 Paste both outputs. 🚀
 
+Get-ChildItem
+
+flask routes
+
+Get-Content run.py
+
