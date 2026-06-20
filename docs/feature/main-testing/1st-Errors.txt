@@ -410,3 +410,75 @@ Fix the Python version first. 🚀
 
 cat runtime.txt
 
+Bro, we finally found the real issue. 🎯
+
+Render is definitely still using Python 3.14.3:
+
+/opt/render/project/python/Python-3.14.3/
+
+and now the error changed to:
+
+AttributeError: attribute '__default__' of 'typing.ParamSpec' objects is not writable
+
+This is another Python 3.14 compatibility problem, not your Flask code.
+
+Why runtime.txt isn't working
+
+Your service is a Python 3 Native Runtime service. Render's native runtime has changed behavior, and your logs prove it is ignoring runtime.txt and building with Python 3.14 anyway.
+
+Fastest fix
+
+In Render Settings → Environment
+
+Add:
+
+PYTHON_VERSION=3.11.9
+
+Then:
+
+Save changes
+Manual Deploy
+Clear build cache & deploy
+Alternative
+
+Create a file named:
+
+.python-version
+
+in the repository root with:
+
+3.11.9
+
+Commit and push:
+
+echo 3.11.9 > .python-version
+
+git add .python-version
+git commit -m "Force Python 3.11.9"
+git push origin feature/main-testing
+Also update typing_extensions
+
+Your requirements currently pin:
+
+typing_extensions==4.9.0
+
+For Python 3.14 compatibility issues, bump it to:
+
+typing_extensions>=4.15.0
+
+because the traceback is now inside typing_extensions.py.
+
+What I'd do right now
+Add Render Environment Variable:
+PYTHON_VERSION=3.11.9
+Clear build cache & deploy.
+If Render still uses 3.14, add:
+.python-version
+
+with:
+
+3.11.9
+Push and redeploy.
+
+Your Flask app itself is no longer the problem. The deployment is failing before it even finishes importing SQLAlchemy because Render is launching it under Python 3.14. Once Render actually runs Python 3.11, these import-time crashes should disappear. 🚀
+
