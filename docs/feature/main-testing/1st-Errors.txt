@@ -482,3 +482,8 @@ Push and redeploy.
 
 Your Flask app itself is no longer the problem. The deployment is failing before it even finishes importing SQLAlchemy because Render is launching it under Python 3.14. Once Render actually runs Python 3.11, these import-time crashes should disappear. 🚀
 
+git log -1 --stat
+
+If .python-version appears in the latest commit, then the Git side is completely correct.
+
+
