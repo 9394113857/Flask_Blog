@@ -1,0 +1,160 @@
+(venv) PS E:\New Experiments\Flask_Blog> flask db init
+Usage: flask [OPTIONS] COMMAND [ARGS]...
+Try 'flask --help' for help.
+
+Error: No such command 'db'.
+(venv) PS E:\New Experiments\Flask_Blog> flask db migrate -m "Initial migration"
+Usage: flask [OPTIONS] COMMAND [ARGS]...
+Try 'flask --help' for help.
+
+Error: No such command 'db'.
+(venv) PS E:\New Experiments\Flask_Blog> flask db upgrade
+Usage: flask [OPTIONS] COMMAND [ARGS]...
+Try 'flask --help' for help.
+
+Error: No such command 'db'.
+(venv) PS E:\New Experiments\Flask_Blog>
+
+Bro, this error:
+
+Error: No such command 'db'
+
+means Flask-Migrate is not registered with your Flask app OR Flask-Migrate is not installed.
+
+Step 1: Check if Flask-Migrate is installed
+pip show Flask-Migrate
+
+If nothing is returned, install it:
+
+pip install Flask-Migrate
+Step 2: Check app/__init__.py
+
+You should have something similar to:
+
+from flask_migrate import Migrate
+from app.extensions import db
+
+migrate = Migrate()
+
+def create_app():
+    app = Flask(__name__)
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    return app
+
+or
+
+migrate = Migrate(app, db)
+Step 3: Verify Flask sees the db command
+
+Run:
+
+flask --help
+
+You should see:
+
+Commands:
+  db
+  routes
+  run
+  shell
+
+If db is missing, Flask-Migrate is not properly registered.
+
+Step 4: Check FLASK_APP
+echo $env:FLASK_APP
+
+Should point to your application, for example:
+
+run.py
+
+or
+
+run
+Step 5: Check imports
+
+In run.py:
+
+from app import create_app
+
+app = create_app()
+
+And inside create_app() make sure:
+
+from flask_migrate import Migrate
+
+is present and initialized.
+
+Paste these 3 things:
+
+pip show Flask-Migrate
+flask --help
+app/__init__.py
+
+and I'll tell you exactly why the db command is not appearing.
+
+Good bro ✅
+
+Flask-Migrate is installed.
+
+Now run:
+
+flask --help
+
+Paste the entire output.
+
+Especially check whether you see:
+
+Commands:
+  db
+  routes
+  run
+  shell
+
+or only:
+
+Commands:
+  routes
+  run
+  shell
+
+If db is missing, then Flask-Migrate is not initialized in your app.
+
+Also run:
+
+echo $env:FLASK_APP
+
+and paste the output.
+
+If db is missing, I'll need these files:
+
+run.py
+app/__init__.py
+
+because usually the problem is one of these:
+
+from flask_migrate import Migrate
+
+migrate = Migrate()
+
+missing, or
+
+migrate.init_app(app, db)
+
+missing, or
+
+from app import create_app
+
+app = create_app()
+
+not loading the app that contains Flask-Migrate.
+
+So next commands:
+
+flask --help
+echo $env:FLASK_APP
+
+Paste both outputs. 🚀
+
