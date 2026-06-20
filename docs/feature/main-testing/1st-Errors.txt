@@ -164,3 +164,127 @@ flask routes
 
 Get-Content run.py
 
+$env:FLASK_APP="run.py"
+flask routes
+flask run --host=0.0.0.0 --port=5001 --debug
+
+Fix the current 500 error first.
+
+Get-ChildItem .\flaskblog\logs -Recurse | Sort-Object LastWriteTime -Descending | Select-Object -First 5
+
+Get-Content .\flaskblog\logs\2026\06\2026-06-20.log -Tail 50
+
+Boom 💥 found it bro.
+
+The error is crystal clear:
+
+sqlite3.OperationalError: no such table: post
+
+Your home() route is trying to run:
+
+Post.query.order_by(...)
+
+but the database does not contain the post table yet.
+
+Why this happened
+
+Earlier you deleted:
+
+instance/
+migrations/
+
+After that, a new empty SQLite database got created.
+
+So:
+
+site.db exists ✅
+post table ❌
+user table ❌
+password_history table ❌
+First check database file
+Get-ChildItem .\instance
+
+You should see something like:
+
+site.db
+Create tables manually once
+
+Open Flask shell:
+
+flask shell
+
+Then run:
+
+from flaskblog import db
+db.create_all()
+exit()
+Alternative (easier)
+
+Since your run.py already contains:
+
+with app.app_context():
+    db.create_all()
+
+just run:
+
+python run.py
+
+instead of:
+
+flask run
+
+because python run.py executes db.create_all() first.
+
+Verify tables were created
+
+After running:
+
+python run.py
+
+open:
+
+http://127.0.0.1:5000/
+
+(or whatever port it shows)
+
+The 500 error should disappear.
+
+Long-term microservice approach
+
+For your Dedeepya-style projects:
+
+Auth Service
+Product Service
+Order Service
+
+I would not rely on:
+
+db.create_all()
+
+in production.
+
+Instead use:
+
+flask db migrate -m "Initial migration"
+flask db upgrade
+
+because when you add:
+
+phone = db.Column(...)
+
+later, the database schema updates safely.
+
+Right now do this
+Get-ChildItem .\instance
+
+and
+
+python run.py
+
+Then tell me:
+
+Does site.db exist?
+Does /home open successfully after python run.py?
+
+We're one step away from fixing it. 🚀
+
