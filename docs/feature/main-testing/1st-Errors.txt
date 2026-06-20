@@ -288,3 +288,125 @@ Does /home open successfully after python run.py?
 
 We're one step away from fixing it. 🚀
 
+Found it bro 🎯
+
+This is NOT your Flask code problem.
+
+This is a Python 3.14 compatibility issue.
+
+Look at the log:
+
+/opt/render/project/python/Python-3.14.3/
+
+and
+
+AssertionError: Class SQLCoreOperations ...
+
+This is coming from:
+
+SQLAlchemy 2.0.27
+Python 3.14.3
+
+Your app is trying to run on Python 3.14, but SQLAlchemy 2.0.27 doesn't properly support it.
+
+Why Render is using Python 3.14
+
+Your build log shows:
+
+cp314
+manylinux
+Python-3.14.3
+
+which means Render ignored your intended Python version and built using 3.14.
+
+Fix
+
+At the root of your project create:
+
+runtime.txt
+
+python-3.11.9
+
+You already uploaded a runtime file containing:
+
+python-3.11.9
+
+Make sure:
+
+runtime.txt
+
+is committed to GitHub root.
+
+Verify
+
+Run:
+
+git status
+
+You should see:
+
+runtime.txt
+
+tracked.
+
+If not:
+
+git add runtime.txt
+git commit -m "Add runtime.txt for Python 3.11.9"
+git push origin feature/main-testing
+
+(or your branch)
+
+Even better
+
+Update SQLAlchemy:
+
+Current:
+
+SQLAlchemy==2.0.27
+
+Change to:
+
+SQLAlchemy>=2.0.41
+
+and
+
+Flask-SQLAlchemy>=3.1.1
+
+But the main issue is Python 3.14.
+
+What I would do
+Keep:
+runtime.txt
+
+with:
+
+python-3.11.9
+Commit and push.
+In Render:
+Manual Deploy
+→ Clear build cache & deploy
+Watch logs.
+
+You should then see:
+
+Python 3.11.9
+
+instead of:
+
+Python 3.14.3
+
+and the SQLAlchemy crash should disappear.
+
+So the root cause is:
+
+✅ Flask code okay
+✅ Gunicorn command okay
+✅ Requirements installed okay
+❌ Render running Python 3.14.3
+❌ SQLAlchemy 2.0.27 incompatible with Python 3.14
+
+Fix the Python version first. 🚀
+
+cat runtime.txt
+
