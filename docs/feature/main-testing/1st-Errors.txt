@@ -487,3 +487,184 @@ git log -1 --stat
 If .python-version appears in the latest commit, then the Git side is completely correct.
 
 
+Bro, I found the exact bug. 🎯
+
+Your registration route is:
+
+user = User(...)
+db.session.add(user)
+db.session.commit()
+
+user.update_password_history(...)
+send_verification_email(user)
+
+flash(...)
+return redirect(url_for('login'))
+
+And your exception handler is:
+
+except Exception as e:
+    logger.error(f"Error in register route: {str(e)}")
+    flash('An error occurred. Please try again later.', 'danger')
+
+What happened
+
+Since the database row exists:
+
+verified = false
+
+and registration POST returned:
+
+POST /register HTTP/1.1" 200
+
+the failure happened after:
+
+db.session.commit()
+
+Most likely at:
+
+send_verification_email(user)
+
+Another problem I found
+
+Your email sender is:
+
+msg = Message(
+    'Email Verification',
+    sender='noreply@demo.com',
+    recipients=[user.email]
+)
+
+But your Flask config uses:
+
+MAIL_USERNAME = practicesession3@gmail.com
+MAIL_DEFAULT_SENDER = MAIL_USERNAME
+
+So Gmail authenticates as:
+
+practicesession3@gmail.com
+
+but you're trying to send as:
+
+noreply@demo.com
+
+Many SMTP providers reject that.
+
+Fix #1 (recommended)
+
+Change BOTH email functions.
+
+Current:
+
+msg = Message(
+    'Email Verification',
+    sender='noreply@demo.com',
+    recipients=[user.email]
+)
+
+Change to:
+
+msg = Message(
+    'Email Verification',
+    recipients=[user.email]
+)
+
+or:
+
+msg = Message(
+    'Email Verification',
+    sender=app.config["MAIL_DEFAULT_SENDER"],
+    recipients=[user.email]
+)
+
+Do the same for:
+
+send_reset_email()
+
+Fix #2 (VERY IMPORTANT)
+
+Add logging around email sending.
+
+Replace:
+
+mail.send(msg)
+
+with:
+
+try:
+    mail.send(msg)
+    logger.info(f"Verification email sent to {user.email}")
+except Exception as e:
+    logger.error(f"EMAIL ERROR: {str(e)}")
+    raise
+
+Then redeploy.
+
+Fix #3
+
+Check Gmail App Password.
+
+You MUST use:
+
+Google Account
+→ Security
+→ 2-Step Verification
+→ App Passwords
+
+and store the 16-character App Password in:
+
+MAIL_PASSWORD
+
+Not your Gmail login password.
+
+Quick proof test
+
+Try login now.
+
+Your database record shows:
+
+verified = false
+
+So login should show:
+
+Your email is not verified. Please check your email.
+
+because:
+
+if user.verified:
+    login_user(...)
+else:
+    flash(
+      'Your email is not verified. Please check your email.'
+    )
+
+If that happens, it proves:
+
+✅ Registration works
+✅ User saved
+✅ Password hash works
+✅ Login works
+❌ Email verification send fails
+
+Next command
+
+Open Render Shell and inspect the latest application log file for the actual email exception, or make the sender change above and redeploy. My bet is the SMTP rejection is caused by:
+
+sender='noreply@demo.com'
+
+while authenticating as:
+
+practicesession3@gmail.com
+
+That's the strongest bug visible in the code you uploaded. 🚀
+
+(venv) PS E:\New Experiments\Flask_Blog> python -m py_compile flaskblog/routes.py
+(venv) PS E:\New Experiments\Flask_Blog> 
+
+and it returns immediately with no output and no errors, it means:
+
+✅ The file has valid Python syntax
+✅ Indentation is correct
+✅ All blocks (try, except, functions, routes, decorators, etc.) are properly structured
+✅ Python was able to compile the file into bytecode successfully
+

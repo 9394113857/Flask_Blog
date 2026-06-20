@@ -74,10 +74,29 @@ def token_required(f):
 # Function to send verification email
 def send_verification_email(user):
     token = generate_verification_token(user.id)
-    verification_link = url_for('verify_email', token=token, _external=True)
-    msg = Message('Email Verification', sender='noreply@demo.com', recipients=[user.email])
-    msg.html = render_template('verification_email.html', user=user, verification_link=verification_link)
-    mail.send(msg)
+    verification_link = url_for(
+        'verify_email',
+        token=token,
+        _external=True
+    )
+
+    msg = Message(
+        'Email Verification',
+        recipients=[user.email]
+    )
+
+    msg.html = render_template(
+        'verification_email.html',
+        user=user,
+        verification_link=verification_link
+    )
+
+    try:
+        mail.send(msg)
+        logger.info(f"Verification email sent to {user.email}")
+    except Exception as e:
+        logger.error(f"EMAIL ERROR: {str(e)}")
+        raise
 
 # Home route
 @app.route("/")
@@ -313,9 +332,24 @@ def reset_request():
 def send_reset_email(user):
     token = generate_reset_token(user.id)
     reset_link = url_for('reset_token', token=token, _external=True)
-    msg = Message('Password Reset Request', sender='noreply@demo.com', recipients=[user.email])
-    msg.html = render_template('reset_password_email.html', user=user, reset_link=reset_link)
-    mail.send(msg)
+
+    msg = Message(
+        'Password Reset Request',
+        recipients=[user.email]
+    )
+
+    msg.html = render_template(
+        'reset_password_email.html',
+        user=user,
+        reset_link=reset_link
+    )
+
+    try:
+        mail.send(msg)
+        logger.info(f"Verification email sent to {user.email}")
+    except Exception as e:
+        logger.error(f"EMAIL ERROR: {str(e)}")
+        raise
 
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
