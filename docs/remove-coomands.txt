@@ -30,6 +30,12 @@ Expected:
 False
 False
 
+================================================
+
+Remove-Item -Recurse -Force .\migrations
+Remove-Item -Recurse -Force .\instance
+
+
 After that your project is clean and ready for:
 
 flask db init
