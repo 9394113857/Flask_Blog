@@ -35,6 +35,8 @@ False
 Remove-Item -Recurse -Force .\migrations
 Remove-Item -Recurse -Force .\instance
 
+Test-Path .\migrations
+Test-Path .\instance
 
 After that your project is clean and ready for:
 
