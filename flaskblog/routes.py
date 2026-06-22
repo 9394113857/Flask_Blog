@@ -167,7 +167,7 @@ def register():
             print("AFTER DB COMMIT")
 
             # TEMPORARILY DISABLE EMAIL
-            # send_verification_email(user)
+            send_verification_email(user)
 
             print("EMAIL SKIPPED FOR TEST")
 
