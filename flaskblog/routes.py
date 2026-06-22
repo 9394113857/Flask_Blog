@@ -96,7 +96,7 @@ def send_verification_email(user):
         logger.info(f"Verification email sent to {user.email}")
     except Exception as e:
         logger.error(f"EMAIL ERROR: {str(e)}")
-        raise
+        # raise
 
 # Home route
 @app.route("/")
@@ -345,7 +345,9 @@ def send_reset_email(user):
     )
 
     try:
+        logger.info("STARTING EMAIL SEND")
         mail.send(msg)
+        logger.info("EMAIL SENT SUCCESSFULLY")
         logger.info(f"Verification email sent to {user.email}")
     except Exception as e:
         logger.error(f"EMAIL ERROR: {str(e)}")
