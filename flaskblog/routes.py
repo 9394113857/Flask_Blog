@@ -73,7 +73,11 @@ def token_required(f):
 
 # Function to send verification email
 def send_verification_email(user):
+
+    print("ENTERED EMAIL FUNCTION")
+
     token = generate_verification_token(user.id)
+
     verification_link = url_for(
         'verify_email',
         token=token,
@@ -92,11 +96,16 @@ def send_verification_email(user):
     )
 
     try:
+
+        print("STARTING EMAIL SEND")
+
         mail.send(msg)
-        logger.info(f"Verification email sent to {user.email}")
+
+        print("EMAIL SENT SUCCESSFULLY")
+
     except Exception as e:
-        logger.error(f"EMAIL ERROR: {str(e)}")
-        # raise
+
+        print("EMAIL ERROR:", str(e))
 
 # Home route
 @app.route("/")
