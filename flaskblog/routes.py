@@ -95,7 +95,18 @@ def send_verification_email(user):
         verification_link=verification_link
     )
 
-    print("EMAIL FUNCTION READY")
+    try:
+
+        print("TESTING SMTP CONNECTION")
+
+        with mail.connect() as conn:
+            print("SMTP CONNECTION SUCCESS")
+
+        print("SMTP TEST COMPLETE")
+
+    except Exception as e:
+
+        print("SMTP ERROR:", str(e))
 
 # Home route
 @app.route("/")
