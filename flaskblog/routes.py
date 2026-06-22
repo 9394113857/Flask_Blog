@@ -121,15 +121,29 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for('home'))
     form = RegistrationForm()
+
+    logger.info("REGISTER ROUTE ENTERED")
+
     if form.validate_on_submit():
+        logger.info("FORM VALIDATED")
         try:
             hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+
+            logger.info("BEFORE DB COMMIT")
+            
             user = User(username=form.username.data, email=form.email.data, password=hashed_password)
             db.session.add(user)
             db.session.commit()
+
+            logger.info("AFTER DB COMMIT")
+            
             # Save the new password to the password history
             user.update_password_history(form.password.data)
+            
             send_verification_email(user)
+
+            logger.info("AFTER EMAIL SEND")
+            
             flash('An email has been sent with instructions to verify your email.', 'info')
             return redirect(url_for('login'))
         except Exception as e:
