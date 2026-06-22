@@ -13,7 +13,7 @@ if __name__ == "__main__":
 # Verify:
 # echo $env:FLASK_APP
 
-# Show all registered routes:
+# Show all registered routes: 
 # flask routes
 
 # Run Flask application
