@@ -86,27 +86,31 @@ def send_verification_email(user):
 
     msg = Message(
         'Email Verification',
+        sender=app.config['MAIL_USERNAME'],
         recipients=[user.email]
     )
 
-    msg.html = render_template(
-        'verification_email.html',
-        user=user,
-        verification_link=verification_link
-    )
+    msg.body = f"""
+Verify your account:
+
+{verification_link}
+"""
 
     try:
 
         print("TESTING SMTP CONNECTION")
 
         with mail.connect() as conn:
+
             print("SMTP CONNECTION SUCCESS")
 
-        print("SMTP TEST COMPLETE")
+            conn.send(msg)
+
+            print("EMAIL SENT SUCCESSFULLY")
 
     except Exception as e:
 
-        print("SMTP ERROR:", str(e))
+        print("EMAIL ERROR:", str(e))
 
 # Home route
 @app.route("/")
