@@ -95,17 +95,7 @@ def send_verification_email(user):
         verification_link=verification_link
     )
 
-    try:
-
-        print("STARTING EMAIL SEND")
-
-        mail.send(msg)
-
-        print("EMAIL SENT SUCCESSFULLY")
-
-    except Exception as e:
-
-        print("EMAIL ERROR:", str(e))
+    print("EMAIL FUNCTION READY")
 
 # Home route
 @app.route("/")
@@ -165,13 +155,14 @@ def register():
 
             print("AFTER DB COMMIT")
 
-            send_verification_email(user)
+            # TEMPORARILY DISABLE EMAIL
+            # send_verification_email(user)
 
-            print("AFTER EMAIL SEND")
+            print("EMAIL SKIPPED FOR TEST")
 
             flash(
-                'An email has been sent with instructions to verify your email.',
-                'info'
+                'Registration successful (email temporarily disabled).',
+                'success'
             )
 
             return redirect(url_for('login'))
