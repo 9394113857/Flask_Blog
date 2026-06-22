@@ -118,7 +118,8 @@ def about():
 # Registration route
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-    logger.info("REGISTER ROUTE ENTERED")
+
+    print("REGISTER ROUTE ENTERED")
 
     if current_user.is_authenticated:
         return redirect(url_for('home'))
@@ -126,14 +127,18 @@ def register():
     form = RegistrationForm()
 
     if form.validate_on_submit():
-        logger.info("FORM VALIDATED")
+
+        print("FORM VALIDATED")
 
         try:
-            logger.info("BEFORE DB COMMIT")
+
+            print("BEFORE PASSWORD HASH")
 
             hashed_password = bcrypt.generate_password_hash(
                 form.password.data
             ).decode('utf-8')
+
+            print("BEFORE USER CREATE")
 
             user = User(
                 username=form.username.data,
@@ -141,22 +146,43 @@ def register():
                 password=hashed_password
             )
 
+            print("BEFORE DB ADD")
+
             db.session.add(user)
+
+            print("BEFORE DB COMMIT")
+
             db.session.commit()
 
-            logger.info("AFTER DB COMMIT")
+            print("AFTER DB COMMIT")
 
             send_verification_email(user)
 
-            logger.info("AFTER EMAIL SEND")
+            print("AFTER EMAIL SEND")
 
-            flash('Email sent', 'success')
+            flash(
+                'An email has been sent with instructions to verify your email.',
+                'info'
+            )
+
             return redirect(url_for('login'))
 
         except Exception as e:
-            logger.error(f"REGISTER ERROR: {e}")
+
+            print("REGISTER ERROR:", str(e))
+
             db.session.rollback()
 
+            flash(
+                'An error occurred. Please try again later.',
+                'danger'
+            )
+
+    return render_template(
+        'register.html',
+        title='Register',
+        form=form
+    )
 
 # Email verification route
 @app.route("/verify_email/<token>", methods=['GET'])
