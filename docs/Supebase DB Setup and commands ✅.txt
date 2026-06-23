@@ -28,3 +28,6 @@ Remove-Item Env:DATABASE_URL
 Now your local terminal is clean again 👍
 
 
+
+
+
